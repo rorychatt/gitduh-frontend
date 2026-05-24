@@ -17,7 +17,12 @@ export const Button: React.FC<ButtonProps> = ({
   iconRight,
   className = "",
   disabled,
-  ...props
+  type = "button",
+  onClick,
+  style,
+  title,
+  id,
+  tabIndex,
 }) => {
   const baseClass = "btn";
   const variantClass = `btn-${variant}`;
@@ -26,9 +31,14 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
+      type={type}
       className={`${baseClass} ${variantClass} ${sizeClass} ${loadingClass} ${className}`}
       disabled={disabled || loading}
-      {...props}
+      onClick={onClick}
+      style={style}
+      title={title}
+      id={id}
+      tabIndex={tabIndex}
     >
       {loading && <span className="spinner-small"></span>}
       {!loading && iconLeft && <span className="btn-icon-left">{iconLeft}</span>}

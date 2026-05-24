@@ -12,7 +12,14 @@ export const Select: React.FC<SelectProps> = ({
   id,
   className = "",
   children,
-  ...props
+  value,
+  onChange,
+  required,
+  disabled,
+  name,
+  style,
+  onFocus,
+  onBlur,
 }) => {
   return (
     <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -20,8 +27,14 @@ export const Select: React.FC<SelectProps> = ({
       <select
         id={id}
         className={`modal-input ${className}`}
-        style={{ borderColor: error ? "var(--accent-red)" : undefined, cursor: "pointer" }}
-        {...props}
+        style={{ ...style, borderColor: error ? "var(--accent-red)" : undefined, cursor: "pointer" }}
+        value={value}
+        onChange={onChange}
+        required={required}
+        disabled={disabled}
+        name={name}
+        onFocus={onFocus}
+        onBlur={onBlur}
       >
         {children}
       </select>

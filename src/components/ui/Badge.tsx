@@ -23,7 +23,10 @@ export const Badge: React.FC<BadgeProps> = ({
   status = "neutral",
   glow = false,
   className = "",
-  ...props
+  id,
+  style,
+  onClick,
+  title,
 }) => {
   const normStatus = status.toLowerCase();
   
@@ -45,7 +48,10 @@ export const Badge: React.FC<BadgeProps> = ({
   return (
     <span
       className={`canvas-status-badge ${statusClass} ${glowClass} ${className}`}
-      {...props}
+      id={id}
+      style={style}
+      onClick={onClick}
+      title={title}
     >
       {children || status}
     </span>

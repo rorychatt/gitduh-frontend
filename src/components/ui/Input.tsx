@@ -11,7 +11,20 @@ export const Input: React.FC<InputProps> = ({
   id,
   className = "",
   type = "text",
-  ...props
+  value,
+  onChange,
+  placeholder,
+  required,
+  disabled,
+  readOnly,
+  name,
+  autoFocus,
+  autoComplete,
+  style,
+  onFocus,
+  onBlur,
+  onKeyDown,
+  onKeyUp,
 }) => {
   return (
     <div className="form-group" style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -20,8 +33,20 @@ export const Input: React.FC<InputProps> = ({
         id={id}
         type={type}
         className={`modal-input ${className}`}
-        style={{ borderColor: error ? "var(--accent-red)" : undefined }}
-        {...props}
+        style={{ ...style, borderColor: error ? "var(--accent-red)" : undefined }}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        required={required}
+        disabled={disabled}
+        readOnly={readOnly}
+        name={name}
+        autoFocus={autoFocus}
+        autoComplete={autoComplete}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        onKeyDown={onKeyDown}
+        onKeyUp={onKeyUp}
       />
       {error && <span style={{ fontSize: "11px", color: "var(--accent-red)", marginTop: "2px" }}>{error}</span>}
     </div>
