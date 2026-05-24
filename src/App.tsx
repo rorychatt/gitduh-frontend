@@ -12,6 +12,11 @@ import { Button } from "./components/ui/Button";
 import { Badge } from "./components/ui/Badge";
 import type { Project, Repository, Workflow, StepRun, AuditLogEntry } from "./types";
 
+const getSafe = <T,>(obj: Record<string, T> | undefined | null, key: string): T | undefined => {
+  if (!obj || key === "__proto__" || key === "constructor" || key === "prototype") return undefined;
+  return Object.prototype.hasOwnProperty.call(obj, key) ? obj[key] : undefined;
+};
+
 function App() {
   const [token, setToken] = useState<string | null>(localStorage.getItem("gitduh_token"));
   const [username, setUsername] = useState<string | null>(localStorage.getItem("gitduh_username"));
@@ -462,7 +467,10 @@ function App() {
         const keys = Object.keys(data);
         if (keys.length > 0) {
           setSelectedWorkflowName(keys[0]);
-          initializeCanvasSteps(data[keys[0]]);
+          const wf = getSafe(data, keys[0]);
+          if (wf) {
+            initializeCanvasSteps(wf);
+          }
         }
       }
     } catch (e) {
@@ -472,15 +480,18 @@ function App() {
 
   const initializeCanvasSteps = (workflow: Workflow) => {
     // Create initial step status placeholders
-    const steps: StepRun[] = Object.keys(workflow.jobs).map((jobId) => {
-      const job = workflow.jobs[jobId];
-      return {
-        id: jobId,
-        name: job.name,
-        status: "Queued",
-        logs: "",
-        execution_type: job.agent ? "agent" : "command",
-      };
+    const steps: StepRun[] = [];
+    Object.keys(workflow.jobs).forEach((jobId) => {
+      const job = getSafe(workflow.jobs, jobId);
+      if (job) {
+        steps.push({
+          id: jobId,
+          name: job.name,
+          status: "Queued",
+          logs: "",
+          execution_type: job.agent ? "agent" : "command",
+        });
+      }
     });
     setStepRuns(steps);
     setRunStatus("Idle");
@@ -495,7 +506,10 @@ function App() {
 
   const handleWorkflowChange = (name: string) => {
     setSelectedWorkflowName(name);
-    initializeCanvasSteps(workflows[name]);
+    const wf = getSafe(workflows, name);
+    if (wf) {
+      initializeCanvasSteps(wf);
+    }
   };
 
   const handleRunWorkflow = async () => {
@@ -541,7 +555,7 @@ function App() {
     }
   };
 
-  const currentWorkflow = workflows[selectedWorkflowName];
+  const currentWorkflow = getSafe(workflows, selectedWorkflowName);
   const activeRepo = repositories.find((r) => r.id === selectedRepoId);
 
   // Helper calculations for Dashboard
@@ -1335,9 +1349,9 @@ function App() {
                   }}
                 >
                   <div className="workflow-item-left">
-                    <span className="workflow-item-name">{workflows[name].name}</span>
+                    <span className="workflow-item-name">{getSafe(workflows, name)?.name}</span>
                     <span className="workflow-item-trigger">
-                      on: [{workflows[name].on.join(", ")}]
+                      on: [{(getSafe(workflows, name)?.on || []).join(", ")}]
                     </span>
                   </div>
                   <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>yaml</span>

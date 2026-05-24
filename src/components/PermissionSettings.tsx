@@ -90,6 +90,16 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
   }, [repoId]);
 
   const handleToggleLogging = async (key: keyof LoggingSettings) => {
+    const allowedKeys: (keyof LoggingSettings)[] = [
+      "permissions",
+      "secrets",
+      "workflows",
+      "actions",
+      "projects",
+    ];
+    if (!allowedKeys.includes(key)) {
+      return;
+    }
     const updatedSettings = {
       ...loggingSettings,
       [key]: !loggingSettings[key],

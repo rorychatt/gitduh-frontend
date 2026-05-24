@@ -3,6 +3,11 @@ import type { Job, RunStatus, StepRun } from "../types";
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
 
+const getSafe = <T,>(obj: Record<string, T> | undefined | null, key: string): T | undefined => {
+  if (!obj || key === "__proto__" || key === "constructor" || key === "prototype") return undefined;
+  return Object.prototype.hasOwnProperty.call(obj, key) ? obj[key] : undefined;
+};
+
 interface WorkflowCanvasProps {
   workflowName: string;
   jobs: Record<string, Job>;
@@ -30,17 +35,18 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
 
   // Let's compute job columns (topological levels)
   const computeLevels = (): Record<string, number> => {
-    const levels: Record<string, number> = {};
+    const levels: Record<string, number> = Object.create(null);
 
     // First, triggers are level 0
     // In our simplified view, let's place nodes based on needs list length
     Object.keys(jobs).forEach((jobId) => {
-      const job = jobs[jobId];
+      const job = getSafe(jobs, jobId);
+      if (!job) return;
       if (!job.needs || job.needs.length === 0) {
         levels[jobId] = 1; // Level 1 is first action col
       } else {
         // Simple heuristic: level is max level of dependencies + 1
-        levels[jobId] = Math.max(...job.needs.map((n) => levels[n] || 0)) + 1;
+        levels[jobId] = Math.max(...job.needs.map((n) => getSafe(levels, n) || 0)) + 1;
       }
     });
 
@@ -52,8 +58,8 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
 
   // Position nodes nicely
   // Map job_id -> {x, y}
-  const positions: Record<string, { x: number; y: number }> = {};
-  const levelCounts: Record<number, number> = {};
+  const positions: Record<string, { x: number; y: number }> = Object.create(null);
+  const levelCounts: Record<number, number> = Object.create(null);
 
   // Initialize level counts
   for (let i = 0; i <= maxLevel + 1; i++) {
@@ -66,12 +72,12 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
   levelCounts[0] = 1;
 
   // Position all job nodes
-  const orderedJobIds = Object.keys(jobs).sort((a, b) => (levels[a] || 0) - (levels[b] || 0));
+  const orderedJobIds = Object.keys(jobs).sort((a, b) => (getSafe(levels, a) || 0) - (getSafe(levels, b) || 0));
 
   orderedJobIds.forEach((jobId) => {
-    const lvl = levels[jobId] || 1;
-    const indexInLvl = levelCounts[lvl];
-    levelCounts[lvl] += 1;
+    const lvl = getSafe(levels, jobId) || 1;
+    const indexInLvl = levelCounts[lvl] || 0;
+    levelCounts[lvl] = indexInLvl + 1;
 
     positions[jobId] = {
       x: startX + lvl * colWidth,
@@ -106,7 +112,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
   };
 
   // Handle sidebar drawer content
-  const selectedJob = selectedNodeId ? jobs[selectedNodeId] : null;
+  const selectedJob = selectedNodeId ? getSafe(jobs, selectedNodeId) : null;
   const selectedJobStatus = selectedNodeId ? getStepRunStatus(selectedNodeId) : null;
   const selectedJobLogs = selectedNodeId
     ? stepRuns.find((s) => s.id === selectedNodeId)?.logs
@@ -182,9 +188,10 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
 
         {/* Connect trigger node to level 1 jobs */}
         {Object.keys(jobs).map((jobId) => {
-          const job = jobs[jobId];
-          const startPos = positions[triggerNodeId];
-          const endPos = positions[jobId];
+          const job = getSafe(jobs, jobId);
+          if (!job) return null;
+          const startPos = getSafe(positions, triggerNodeId);
+          const endPos = getSafe(positions, jobId);
 
           if (startPos && endPos && (!job.needs || job.needs.length === 0)) {
             const pathStr = getCurvePath(
@@ -213,12 +220,12 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
 
         {/* Connect job dependencies */}
         {Object.keys(jobs).map((jobId) => {
-          const job = jobs[jobId];
-          if (!job.needs) return null;
+          const job = getSafe(jobs, jobId);
+          if (!job || !job.needs) return null;
 
           return job.needs.map((needId) => {
-            const startPos = positions[needId];
-            const endPos = positions[jobId];
+            const startPos = getSafe(positions, needId);
+            const endPos = getSafe(positions, jobId);
 
             if (startPos && endPos) {
               const pathStr = getCurvePath(
@@ -262,8 +269,8 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
           className="canvas-node selected"
           style={{
             position: "absolute",
-            left: `${positions[triggerNodeId].x}px`,
-            top: `${positions[triggerNodeId].y}px`,
+            left: `${getSafe(positions, triggerNodeId)?.x}px`,
+            top: `${getSafe(positions, triggerNodeId)?.y}px`,
           }}
           onClick={() => handleNodeClick(triggerNodeId)}
         >
@@ -277,8 +284,9 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
 
         {/* Job Nodes */}
         {Object.keys(jobs).map((jobId) => {
-          const job = jobs[jobId];
-          const pos = positions[jobId];
+          const job = getSafe(jobs, jobId);
+          if (!job) return null;
+          const pos = getSafe(positions, jobId);
           if (!pos) return null;
 
           const status = getStepRunStatus(jobId);
