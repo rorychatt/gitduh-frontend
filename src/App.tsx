@@ -10,6 +10,7 @@ import { RegisterRepoModal } from "./components/RegisterRepoModal";
 import { FileExplorer } from "./components/FileExplorer";
 import { Button } from "./components/ui/Button";
 import { Badge } from "./components/ui/Badge";
+import { useTranslation } from "react-i18next";
 import type { Project, Repository, Workflow, StepRun, AuditLogEntry } from "./types";
 
 const getSafe = <T,>(obj: Record<string, T> | undefined | null, key: string): T | undefined => {
@@ -19,6 +20,7 @@ const getSafe = <T,>(obj: Record<string, T> | undefined | null, key: string): T 
 };
 
 function App() {
+  const { t } = useTranslation();
   const [token, setToken] = useState<string | null>(localStorage.getItem("gitduh_token"));
   const [username, setUsername] = useState<string | null>(localStorage.getItem("gitduh_username"));
   const [activeTab, setActiveTab] = useState<"code" | "canvas" | "permissions">("code");
@@ -697,7 +699,7 @@ function App() {
           <div className="drawer-header">
             <div className="logo-container">
               <span style={{ fontSize: "22px" }}>🛡️</span>
-              <span className="logo-text">GitDuh</span>
+              <span className="logo-text">{t("common.gitDuh")}</span>
             </div>
             <button className="drawer-close-btn" onClick={() => setIsDrawerOpen(false)}>
               &times;
@@ -750,7 +752,7 @@ function App() {
 
             <div className="drawer-repos-section">
               <div className="drawer-repos-header">
-                <span>Top repositories</span>
+                <span>{t("app.topRepositories")}</span>
                 <span className="search-icon-small">🔍</span>
               </div>
 
@@ -787,7 +789,7 @@ function App() {
                     );
                   })}
                 {repositories.length === 0 && (
-                  <div className="drawer-repo-empty">No repositories registered.</div>
+                  <div className="drawer-repo-empty">{t("app.noReposRegistered")}</div>
                 )}
               </div>
             </div>
@@ -795,7 +797,7 @@ function App() {
             <div className="drawer-banner">
               <div className="drawer-banner-title">🛡️ Strict Sandbox Mode</div>
               <p className="drawer-banner-text">
-                Local automation agents run in isolated sub-environments. Approvals are logged.
+                {t("app.sandboxInfo")}
               </p>
             </div>
           </div>
@@ -818,7 +820,7 @@ function App() {
           >
             <span style={{ fontSize: "22px" }}>🛡️</span>
             <span className="logo-text" style={{ fontSize: "18px" }}>
-              GitDuh
+              {t("common.gitDuh")}
             </span>
           </div>
         </div>
@@ -828,7 +830,7 @@ function App() {
             <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
               <div className="navbar-breadcrumbs">
                 <span className="breadcrumb-link" onClick={() => navigateTo("dashboard")}>
-                  Dashboard
+                  {t("common.dashboard")}
                 </span>
                 <span className="breadcrumb-separator">/</span>
                 <span className="breadcrumb-project">
@@ -890,7 +892,7 @@ function App() {
               </div>
             </div>
           ) : (
-            <span style={{ color: "var(--text-secondary)", fontWeight: 500 }}>Dashboard</span>
+            <span style={{ color: "var(--text-secondary)", fontWeight: 500 }}>{t("common.dashboard")}</span>
           )}
         </div>
 
@@ -946,7 +948,7 @@ function App() {
           {/* Left Column: Repository list */}
           <div className="dashboard-col">
             <div className="dashboard-section-header">
-              <h3 className="dashboard-section-title">Repositories</h3>
+              <h3 className="dashboard-section-title">{t("common.repositories")}</h3>
               <Button
                 variant="primary"
                 size="sm"
@@ -957,7 +959,7 @@ function App() {
             </div>
 
             <div className="project-filter-container">
-              <label htmlFor="dashboard-proj-filter">Select Project Filter</label>
+              <label htmlFor="dashboard-proj-filter">{t("app.selectProjectFilter")}</label>
               <select
                 id="dashboard-proj-filter"
                 value={selectedProjectId}
@@ -1014,7 +1016,7 @@ function App() {
                     textAlign: "center",
                   }}
                 >
-                  No repositories found.
+                  {t("app.noReposFound")}
                 </div>
               )}
             </div>
@@ -1031,7 +1033,7 @@ function App() {
             }}
           >
             <div className="dashboard-section-header">
-              <h3 className="dashboard-section-title">Local Activity Feed</h3>
+              <h3 className="dashboard-section-title">{t("app.localActivityFeed")}</h3>
             </div>
 
             <div className="activity-feed">
@@ -1056,7 +1058,7 @@ function App() {
                           />
                         </div>
                         <span className="feed-item-meta">
-                          repo: <strong>{item.repo}</strong> &bull; {formatTime(item.timestamp)}
+                          {t("app.repoLabel")} <strong>{item.repo}</strong> &bull; {formatTime(item.timestamp)}
                         </span>
                         <div className="feed-item-details">{item.details}</div>
                         {item.repo_id && (
@@ -1082,7 +1084,7 @@ function App() {
                             }}
                             className="feed-item-action"
                           >
-                            Go to Workspace &rarr;
+                            {t("app.goToWorkspace")} &rarr;
                           </span>
                         )}
                       </div>
@@ -1098,7 +1100,7 @@ function App() {
                     textAlign: "center",
                   }}
                 >
-                  No activities logged yet. Trigger a local workflow to populate feed.
+                  {t("app.noActivitiesLogged")}
                 </div>
               )}
             </div>
@@ -1107,7 +1109,7 @@ function App() {
           {/* Right Column: Contextual actions & diagnostics */}
           <div className="dashboard-col">
             <div className="dashboard-section-header">
-              <h3 className="dashboard-section-title">Diagnostics & Actions</h3>
+              <h3 className="dashboard-section-title">{t("app.diagnostics")} & Actions</h3>
             </div>
 
             <div className="diagnostic-metrics">
@@ -1119,23 +1121,23 @@ function App() {
                   🖥️ Local Agent Environment
                 </h4>
                 <div className="health-status-row">
-                  <span className="health-status-label">Claude Engine</span>
+                  <span className="health-status-label">{t("app.claudeEngine")}</span>
                   <span className="health-status-value" style={{ color: "var(--accent-emerald)" }}>
                     🟢 Online
                   </span>
                 </div>
                 <div className="health-status-row">
-                  <span className="health-status-label">Security Sandbox</span>
+                  <span className="health-status-label">{t("app.securitySandbox")}</span>
                   <span className="health-status-value" style={{ color: "var(--accent-cyan)" }}>
                     🟢 Strict
                   </span>
                 </div>
                 <div className="health-status-row">
-                  <span className="health-status-label">Local Host Controller</span>
+                  <span className="health-status-label">{t("app.localHostController")}</span>
                   <span className="health-status-value">🟢 Active</span>
                 </div>
                 <div className="health-status-row">
-                  <span className="health-status-label">Agentic API Latency</span>
+                  <span className="health-status-label">{t("app.agenticApiLatency")}</span>
                   <span className="health-status-value" style={{ fontFamily: "var(--font-mono)" }}>
                     14ms
                   </span>
@@ -1233,7 +1235,7 @@ function App() {
                     return (
                       <div key={run.id} className="pending-approvals-dashboard glow-orange">
                         <span className="pending-card-title">
-                          Repo: {repoName} ({run.workflow_name})
+                          {t("app.repoPrefix")} {repoName} ({run.workflow_name})
                         </span>
                         <div className="pending-card-cmd">{step.name} requires user consent</div>
                         <div className="pending-card-actions">
@@ -1243,7 +1245,7 @@ function App() {
                             size="sm"
                             style={{ flex: 1 }}
                           >
-                            Approve
+                            {t("common.approve")}
                           </Button>
                           <Button
                             onClick={() => approveDirectly(run.id, step.id, false)}
@@ -1251,7 +1253,7 @@ function App() {
                             size="sm"
                             style={{ flex: 1 }}
                           >
-                            Block
+                            {t("common.block")}
                           </Button>
                           <Button
                             onClick={() => {
@@ -1270,7 +1272,7 @@ function App() {
                             size="sm"
                             style={{ flex: 1 }}
                           >
-                            Review
+                            {t("common.review")}
                           </Button>
                         </div>
                       </div>
@@ -1287,7 +1289,7 @@ function App() {
                       textAlign: "center",
                     }}
                   >
-                    No pending approval requests.
+                    {t("app.noPendingApprovals")}
                   </div>
                 )}
               </div>
@@ -1300,20 +1302,20 @@ function App() {
           {/* Sidebar (Left) */}
           <aside className="sidebar">
             <div className="sidebar-section">
-              <div className="sidebar-title">Repository Context</div>
+              <div className="sidebar-title">{t("app.repositoryContext")}</div>
               <div className="repo-info-card">
                 <div className="info-item">
-                  <span className="info-label">Branch</span>
+                  <span className="info-label">{t("app.branch")}</span>
                   <span className="info-val" style={{ color: "var(--accent-cyan)" }}>
-                    main
+                    {t("app.mainBranch")}
                   </span>
                 </div>
                 <div className="info-item">
-                  <span className="info-label">Commits</span>
+                  <span className="info-label">{t("app.commits")}</span>
                   <span className="info-val">4 ahead</span>
                 </div>
                 <div className="info-item">
-                  <span className="info-label">Staged Files</span>
+                  <span className="info-label">{t("app.stagedFiles")}</span>
                   <span className="info-val" style={{ color: "var(--accent-emerald)" }}>
                     2 modified
                   </span>
@@ -1322,7 +1324,7 @@ function App() {
                   className="info-item"
                   style={{ flexDirection: "column", gap: "2px", marginTop: "6px" }}
                 >
-                  <span className="info-label">Local path</span>
+                  <span className="info-label">{t("app.localPath")}</span>
                   <span
                     className="info-val"
                     style={{
@@ -1338,7 +1340,7 @@ function App() {
             </div>
 
             <div className="sidebar-section" style={{ flex: 1 }}>
-              <div className="sidebar-title">Workflow Configurations</div>
+              <div className="sidebar-title">{t("app.workflowConfigurations")}</div>
               {Object.keys(workflows).map((name) => (
                 <div
                   key={name}
@@ -1352,10 +1354,10 @@ function App() {
                   <div className="workflow-item-left">
                     <span className="workflow-item-name">{getSafe(workflows, name)?.name}</span>
                     <span className="workflow-item-trigger">
-                      on: [{(getSafe(workflows, name)?.on || []).join(", ")}]
+                      {t("app.onLabel")} [{(getSafe(workflows, name)?.on || []).join(", ")}]
                     </span>
                   </div>
-                  <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>yaml</span>
+                  <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>{t("app.yaml")}</span>
                 </div>
               ))}
             </div>
@@ -1399,7 +1401,7 @@ function App() {
                         color: "var(--text-secondary)",
                       }}
                     >
-                      Loading pipeline...
+                      {t("app.loadingPipeline")}
                     </div>
                   )}
 

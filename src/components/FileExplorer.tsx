@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardBody } from "./ui/Card";
 import { Button } from "./ui/Button";
+import { useTranslation } from "react-i18next";
 
 interface FileEntry {
   name: string;
@@ -24,6 +25,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
   isFileView,
   onNavigate,
 }) => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<{ entries?: FileEntry[]; content?: string; name?: string; size?: number; type?: string } | null>(null);
@@ -83,7 +85,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
   if (loading) {
     return (
       <div style={{ padding: "40px", textAlign: "center", color: "var(--text-secondary)" }}>
-        <span className="spinner-small" style={{ marginRight: "8px" }}></span> Loading files...
+        <span className="spinner-small" style={{ marginRight: "8px" }}></span> {t("fileExplorer.loadingFiles")}
       </div>
     );
   }
@@ -92,10 +94,10 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
     return (
       <Card glow="red" style={{ margin: "20px" }}>
         <CardBody>
-          <div style={{ color: "var(--accent-red)", fontWeight: 600 }}>Error Loading Repository Files</div>
+          <div style={{ color: "var(--accent-red)", fontWeight: 600 }}>{t("fileExplorer.errorLoading")}</div>
           <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "6px" }}>{error}</p>
           <Button variant="secondary" onClick={handleBackClick} style={{ marginTop: "12px" }}>
-            Go Back
+            {t("fileExplorer.goBack")}
           </Button>
         </CardBody>
       </Card>
@@ -113,7 +115,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <Button variant="secondary" onClick={handleBackClick} size="sm">
-              &larr; Back
+              &larr; {t("common.back")}
             </Button>
             <span style={{ fontSize: "14px", color: "var(--text-secondary)" }}>
               {repoName} / {currentPath}
@@ -167,7 +169,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           {currentPath && (
             <Button variant="secondary" onClick={handleBackClick} size="sm">
-              &larr; Up
+              &larr; {t("common.up")}
             </Button>
           )}
           <span style={{ fontSize: "14px", color: "var(--text-secondary)" }}>
@@ -181,15 +183,15 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid var(--border-color)", textAlign: "left", background: "rgba(255, 255, 255, 0.02)" }}>
-                <th style={{ padding: "12px 16px", fontSize: "12px", color: "var(--text-secondary)", fontWeight: 600 }}>Name</th>
-                <th style={{ padding: "12px 16px", fontSize: "12px", color: "var(--text-secondary)", fontWeight: 600, textAlign: "right" }}>Size</th>
+                <th style={{ padding: "12px 16px", fontSize: "12px", color: "var(--text-secondary)", fontWeight: 600 }}>{t("common.name")}</th>
+                <th style={{ padding: "12px 16px", fontSize: "12px", color: "var(--text-secondary)", fontWeight: 600, textAlign: "right" }}>{t("common.size")}</th>
               </tr>
             </thead>
             <tbody>
               {entries.length === 0 ? (
                 <tr>
                   <td colSpan={2} style={{ padding: "30px", textAlign: "center", color: "var(--text-muted)", fontSize: "13px" }}>
-                    Empty folder.
+                    {t("fileExplorer.emptyFolder")}
                   </td>
                 </tr>
               ) : (

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Button } from "./ui/Button";
+import { useTranslation } from "react-i18next";
 
 interface ConsoleTerminalProps {
   logs: string;
@@ -18,6 +19,7 @@ export const ConsoleTerminal: React.FC<ConsoleTerminalProps> = ({
   isSuspended,
   suspendedCommand,
 }) => {
+  const { t } = useTranslation();
   const terminalEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,7 +34,7 @@ export const ConsoleTerminal: React.FC<ConsoleTerminalProps> = ({
     if (!logText)
       return (
         <span style={{ color: "var(--text-muted)" }}>
-          Console idle. Trigger a workflow to start logging...
+          {t("consoleTerminal.idleMessage")}
         </span>
       );
 
@@ -124,11 +126,11 @@ export const ConsoleTerminal: React.FC<ConsoleTerminalProps> = ({
             }}
           ></span>
           <span className="terminal-title" style={{ marginLeft: "6px" }}>
-            Terminal Console {activeStepName ? `• ${activeStepName}` : ""}
+            {t("consoleTerminal.terminalConsole")} {activeStepName ? `• ${activeStepName}` : ""}
           </span>
         </div>
         <div style={{ fontSize: "11px", color: "var(--text-secondary)" }}>
-          Status:{" "}
+          {t("consoleTerminal.statusLabel")}{" "}
           <span
             style={{
               fontWeight: 600,
@@ -146,11 +148,10 @@ export const ConsoleTerminal: React.FC<ConsoleTerminalProps> = ({
         {isSuspended && (
           <div className="consent-panel">
             <div className="consent-header">
-              <span>⚠️</span> Local Permission Approval Required
+              <span>⚠️</span> {t("consoleTerminal.localPermissionRequired")}
             </div>
             <p style={{ fontSize: "12px", color: "var(--text-primary)", marginBottom: "4px" }}>
-              The GitDuh local runner has suspended execution. An agent/workflow is requesting
-              authorization to execute a shell command:
+              {t("consoleTerminal.runnerSuspended")}
             </p>
             <div className="consent-body">$ {suspendedCommand}</div>
             <div className="consent-actions">
@@ -159,14 +160,14 @@ export const ConsoleTerminal: React.FC<ConsoleTerminalProps> = ({
                 onClick={() => onApprove(true)}
                 style={{ padding: "6px 12px", fontSize: "12px" }}
               >
-                Approve Execution
+                {t("consoleTerminal.approveExecution")}
               </Button>
               <Button
                 variant="danger"
                 onClick={() => onApprove(false)}
                 style={{ padding: "6px 12px", fontSize: "12px", backgroundColor: "transparent" }}
               >
-                Deny & Abort
+                {t("consoleTerminal.denyAndAbort")}
               </Button>
             </div>
           </div>

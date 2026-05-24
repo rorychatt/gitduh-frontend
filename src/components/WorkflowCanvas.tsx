@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import type { Job, RunStatus, StepRun } from "../types";
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
+import { useTranslation } from "react-i18next";
 
 const getSafe = <T,>(obj: Record<string, T> | undefined | null, key: string): T | undefined => {
   if (!obj || key === "__proto__" || key === "constructor" || key === "prototype") return undefined;
@@ -26,6 +27,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
   runStatus,
   onRunWorkflow,
 }) => {
+  const { t } = useTranslation();
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -134,7 +136,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
     <div className="canvas-container">
       <div className="canvas-title">
         <span style={{ fontSize: "15px", fontWeight: 600, color: "var(--text-primary)" }}>
-          Workflow: {workflowName}
+          {t("workflowCanvas.workflowLabel")} {workflowName}
         </span>
         <Badge status={runStatus as any} />
       </div>
@@ -148,7 +150,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
           disabled={runStatus === "Running"}
           iconLeft={<span>⚡</span>}
         >
-          {runStatus === "Running" ? "Executing Local..." : "Run Pipeline Locally"}
+          {runStatus === "Running" ? t("workflowCanvas.executingLocal") : t("workflowCanvas.runPipelineLocally")}
         </Button>
       </div>
 
@@ -276,11 +278,11 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
           onClick={() => handleNodeClick(triggerNodeId)}
         >
           <div className="node-header">
-            <span className="node-type-label node-type-trigger">Trigger</span>
+            <span className="node-type-label node-type-trigger">{t("common.trigger")}</span>
             <span className="node-status-dot node-dot-success"></span>
           </div>
-          <div className="node-name">Local Git Commit</div>
-          <div className="node-detail">on: [commit, manual]</div>
+          <div className="node-name">{t("workflowCanvas.localGitCommit")}</div>
+          <div className="node-detail">{t("app.onLabel")} [commit, manual]</div>
         </div>
 
         {/* Job Nodes */}
@@ -308,7 +310,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
                 <span
                   className={`node-type-label ${isAgent ? "node-type-agent" : "node-type-command"}`}
                 >
-                  {isAgent ? "Claude AI" : "Shell Exec"}
+                  {isAgent ? t("workflowCanvas.claudeAI") : t("workflowCanvas.shellExec")}
                 </span>
                 <span
                   className={`node-status-dot node-dot-${status.toLowerCase() === "waitingapproval" ? "waiting" : status.toLowerCase()}`}
@@ -324,7 +326,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
       {/* Config Drawer */}
       <div className={`node-drawer ${drawerOpen ? "open" : ""}`}>
         <div className="drawer-header">
-          <h2 style={{ fontSize: "15px", fontWeight: 600 }}>Configure Node</h2>
+          <h2 style={{ fontSize: "15px", fontWeight: 600 }}>{t("workflowCanvas.configureNode")}</h2>
           <Button variant="ghost" onClick={() => setDrawerOpen(false)} className="drawer-close">
             ✕
           </Button>
@@ -333,17 +335,17 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
         {selectedNodeId === triggerNodeId ? (
           <div className="drawer-body">
             <div className="form-group">
-              <label>Trigger Source</label>
-              <input type="text" value="Local Repository Commit" disabled />
+              <label>{t("workflowCanvas.triggerSource")}</label>
+              <input type="text" value={t("workflowCanvas.localRepoCommit")} disabled />
             </div>
             <div className="form-group">
-              <label>Events</label>
-              <input type="text" value="commit, manual push" disabled />
+              <label>{t("common.events")}</label>
+              <input type="text" value={t("workflowCanvas.commitManualPush")} disabled />
             </div>
             <div className="form-group">
-              <label>Description</label>
+              <label>{t("common.description")}</label>
               <textarea
-                value="Runs automatically on every local commit inside the workspace before remote push."
+                value={t("workflowCanvas.triggerDesc")}
                 rows={3}
                 disabled
               />
@@ -352,17 +354,17 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
         ) : selectedJob ? (
           <div className="drawer-body">
             <div className="form-group">
-              <label>Node ID</label>
+              <label>{t("workflowCanvas.nodeId")}</label>
               <input type="text" value={selectedNodeId || ""} disabled />
             </div>
             <div className="form-group">
-              <label>Step Name</label>
+              <label>{t("workflowCanvas.stepName")}</label>
               <input type="text" value={selectedJob.name} disabled />
             </div>
 
             {selectedJob.run && (
               <div className="form-group">
-                <label>Terminal Command</label>
+                <label>{t("workflowCanvas.terminalCommand")}</label>
                 <input
                   type="text"
                   value={selectedJob.run}
@@ -375,11 +377,11 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
             {selectedJob.agent && (
               <>
                 <div className="form-group">
-                  <label>Claude Skill Type</label>
+                  <label>{t("workflowCanvas.claudeSkillType")}</label>
                   <input type="text" value={selectedJob.agent.skill} disabled />
                 </div>
                 <div className="form-group">
-                  <label>Target Files (glob)</label>
+                  <label>{t("workflowCanvas.targetFiles")}</label>
                   <input
                     type="text"
                     value={selectedJob.agent.target}
@@ -391,18 +393,18 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
             )}
 
             <div className="form-group">
-              <label>Needs Dependencies</label>
-              <input type="text" value={selectedJob.needs?.join(", ") || "None"} disabled />
+              <label>{t("workflowCanvas.needsDependencies")}</label>
+              <input type="text" value={selectedJob.needs?.join(", ") || t("workflowCanvas.none")} disabled />
             </div>
 
             <div className="form-group">
-              <label>Current Status</label>
+              <label>{t("workflowCanvas.currentStatus")}</label>
               <Badge status={selectedJobStatus as any || "neutral"} />
             </div>
 
             {selectedJobLogs && (
               <div className="form-group">
-                <label>Execution Output Logs</label>
+                <label>{t("workflowCanvas.executionLogs")}</label>
                 <textarea
                   value={selectedJobLogs}
                   rows={8}
@@ -419,7 +421,7 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
         ) : (
           <div className="drawer-body">
             <div style={{ color: "var(--text-muted)", textAlign: "center", padding: "20px" }}>
-              Select a node to configure or view status.
+              {t("workflowCanvas.selectNodePrompt")}
             </div>
           </div>
         )}

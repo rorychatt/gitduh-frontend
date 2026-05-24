@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import type { Project, Repository } from "../types";
 import { Modal } from "./ui/Modal";
+import { useTranslation } from "react-i18next";
 import { Input } from "./ui/Input";
 import { Select } from "./ui/Select";
 import { Button } from "./ui/Button";
@@ -18,6 +19,7 @@ export const RegisterRepoModal: React.FC<RegisterRepoModalProps> = ({
   onClose,
   onSuccess,
 }) => {
+  const { t } = useTranslation();
   const [projectId, setProjectId] = useState(defaultProjectId || projects[0]?.id || "");
   const [name, setName] = useState("");
   const [path, setPath] = useState("/Users/rorychatt/git/rorychatt/");
@@ -64,7 +66,7 @@ export const RegisterRepoModal: React.FC<RegisterRepoModalProps> = ({
     <Modal
       isOpen={true}
       onClose={onClose}
-      title="🛡️ Register New Repository"
+      title={`🛡️ ${t("registerRepoModal.title")}`}
       glow="purple"
     >
       <form onSubmit={handleSubmit} className="modal-form">
@@ -72,7 +74,7 @@ export const RegisterRepoModal: React.FC<RegisterRepoModalProps> = ({
 
         <Select
           id="modal-project"
-          label="Target Project"
+          label={t("registerRepoModal.targetProject")}
           value={projectId}
           onChange={(e) => setProjectId(e.target.value)}
         >
@@ -85,7 +87,7 @@ export const RegisterRepoModal: React.FC<RegisterRepoModalProps> = ({
 
         <Input
           id="modal-name"
-          label="Repository Name"
+          label={t("registerRepoModal.repositoryName")}
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -95,7 +97,7 @@ export const RegisterRepoModal: React.FC<RegisterRepoModalProps> = ({
 
         <Input
           id="modal-path"
-          label="Local Filesystem Path"
+          label={t("registerRepoModal.localPath")}
           type="text"
           value={path}
           onChange={(e) => setPath(e.target.value)}
@@ -110,14 +112,14 @@ export const RegisterRepoModal: React.FC<RegisterRepoModalProps> = ({
             onClick={onClose}
             disabled={loading}
           >
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button
             type="submit"
             variant="primary"
             loading={loading}
           >
-            Register Repository
+            {t("registerRepoModal.registerRepository")}
           </Button>
         </div>
       </form>

@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import { Card, CardBody } from "./ui/Card";
+import { useTranslation } from "react-i18next";
 
 interface LoginProps {
   onLoginSuccess: (token: string, username: string) => void;
 }
 
 export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
+  const { t } = useTranslation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -67,10 +69,10 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           <div style={{ textAlign: "center", display: "flex", flexDirection: "column", gap: "8px" }}>
             <span style={{ fontSize: "40px" }}>🛡️</span>
             <h1 className="logo-text" style={{ fontSize: "28px", margin: 0, fontWeight: 700 }}>
-              GitDuh Platform
+              {t("login.platformTitle")}
             </h1>
             <p style={{ fontSize: "13px", color: "var(--text-secondary)" }}>
-              Sign in to access your local developer workspace
+              {t("login.accessWorkspace")}
             </p>
           </div>
 
@@ -96,22 +98,22 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           >
             <Input
               id="username"
-              label="Username"
+              label={t("login.usernameLabel")}
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="e.g. rorychatt or developer"
+              placeholder={t("login.usernamePlaceholder")}
               required
               autoFocus
             />
 
             <Input
               id="password"
-              label="Password (Optional)"
+              label={t("login.passwordLabel")}
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder={t("login.passwordPlaceholder")}
             />
 
             <Button
@@ -121,7 +123,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               loading={isLoading}
               style={{ marginTop: "8px", width: "100%" }}
             >
-              Sign In to Workspace
+              {t("login.signInButton")}
             </Button>
           </form>
 
@@ -134,7 +136,7 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               paddingTop: "16px",
             }}
           >
-            GitDuh • The Successor to GitHub with Local Automations
+            {t("login.tagline")}
           </div>
         </CardBody>
       </Card>

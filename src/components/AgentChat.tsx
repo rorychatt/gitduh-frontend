@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
+import { useTranslation } from "react-i18next";
 
 interface PlannedStep {
   id: string;
@@ -36,6 +37,7 @@ interface AgentChatProps {
 }
 
 export const AgentChat: React.FC<AgentChatProps> = ({ repoId, onWorkflowCreated }) => {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -139,7 +141,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({ repoId, onWorkflowCreated 
     <div className="agent-chat-container">
       <div className="chat-header">
         <span style={{ fontSize: "14px" }}>🤖</span>
-        <span>Claude Agentic Skill Console</span>
+        <span>{t("agentChat.consoleTitle")}</span>
       </div>
 
       <div className="chat-messages">
@@ -149,7 +151,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({ repoId, onWorkflowCreated 
 
             {msg.plan && (
               <div className="agent-plan-box">
-                <div className="agent-plan-title">Proposing local automation sequence:</div>
+                <div className="agent-plan-title">{t("agentChat.proposingSequence")}</div>
 
                 {msg.plan.planned_steps.map((step) => (
                   <div key={step.id} className="agent-plan-step">
@@ -171,7 +173,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({ repoId, onWorkflowCreated 
                     <div
                       style={{ fontSize: "11px", fontWeight: 600, color: "var(--text-secondary)" }}
                     >
-                      Proposed Config File: `.gitduh/workflows/{wf.filename}`
+                      {t("agentChat.proposedConfigFile")}{wf.filename}`
                     </div>
                     <div className="yaml-diff-container">
                       <div className="diff-header">{wf.filename} (Suggested Additions)</div>
@@ -182,7 +184,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({ repoId, onWorkflowCreated 
                       onClick={() => handleCreateWorkflow(wf)}
                       style={{ padding: "6px 12px", fontSize: "12px", marginTop: "8px" }}
                     >
-                      Create Workflow config
+                      {t("agentChat.createWorkflowConfig")}
                     </Button>
                   </div>
                 ))}
@@ -192,7 +194,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({ repoId, onWorkflowCreated 
         ))}
         {isTyping && (
           <div className="chat-bubble chat-bubble-agent" style={{ opacity: 0.6 }}>
-            Claude is planning steps...
+            {t("agentChat.claudePlanning")}
           </div>
         )}
       </div>
@@ -207,7 +209,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({ repoId, onWorkflowCreated 
           required
         />
         <Button type="submit" variant="primary" style={{ padding: "8px 14px" }}>
-          Ask
+          {t("agentChat.askButton")}
         </Button>
       </form>
     </div>

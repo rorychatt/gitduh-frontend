@@ -6,6 +6,7 @@ import { Select } from "./ui/Select";
 import { Card, CardBody } from "./ui/Card";
 import { Badge } from "./ui/Badge";
 import { Toggle } from "./ui/Toggle";
+import { useTranslation } from "react-i18next";
 
 interface Rule {
   id: string;
@@ -43,6 +44,7 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
   projects,
   selectedProjectId,
 }) => {
+  const { t } = useTranslation();
   const [rules, setRules] = useState<Rule[]>([]);
   const [secrets, setSecrets] = useState<Secret[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
@@ -201,25 +203,25 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
     <div className="settings-container animate-fade-in">
       <div className="settings-header">
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <span className="project-badge">Project: {project?.name || "Local"}</span>
+          <span className="project-badge">{t("permissions.projectLabel")} {project?.name || "Local"}</span>
           <span
             className="project-badge"
             style={{ backgroundColor: "rgba(0, 210, 255, 0.1)", color: "var(--accent-cyan)" }}
           >
-            Repo: {repoName}
+            {t("permissions.repoLabel")} {repoName}
           </span>
         </div>
         <h1 className="settings-title" style={{ marginTop: "8px" }}>
-          Security & Permission Management
+          {t("permissions.securityManagement")}
         </h1>
         <p className="settings-desc">
-          Manage credential scopes, pre-approved CLI commands, and access authorization boundaries.
+          {t("permissions.securitySubtitle")}
         </p>
       </div>
 
       {isLoading ? (
         <div style={{ padding: "40px", textAlign: "center", color: "var(--text-secondary)" }}>
-          Loading settings...
+          {t("permissions.loadingSettings")}
         </div>
       ) : (
         <>
@@ -227,12 +229,10 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
           <Card glow="cyan" className="settings-section-card" style={{ marginBottom: "24px" }}>
             <CardBody>
               <h2 className="section-card-title">
-                <span style={{ color: "var(--accent-cyan)", marginRight: "8px" }}>🔒</span> Command Rules Policies
+                <span style={{ color: "var(--accent-cyan)", marginRight: "8px" }}>🔒</span> {t("permissions.commandRulesPolicies")}
               </h2>
               <p className="section-card-desc">
-                Define which CLI commands are pre-authorized to execute during workflows. Commands
-                that don't match an allowed pattern will suspend the runner and require manual
-                approval.
+                {t("permissions.policyDescription")}
               </p>
 
               <form onSubmit={handleAddRule} className="inline-form" style={{ display: "flex", gap: "12px", alignItems: "flex-end", marginBottom: "20px" }}>
@@ -241,7 +241,7 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
                     type="text"
                     value={newPattern}
                     onChange={(e) => setNewPattern(e.target.value)}
-                    placeholder="Command pattern (e.g. cargo test, vp *, or git push)"
+                    placeholder={t("permissions.commandPatternPlaceholder")}
                     required
                   />
                 </div>
@@ -251,22 +251,22 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
                     onChange={(e) => setNewStatus(e.target.value as Rule["status"])}
                     style={{ width: "130px" }}
                   >
-                    <option value="Allowed">Allowed</option>
-                    <option value="Prompt">Prompt</option>
-                    <option value="Blocked">Blocked</option>
+                    <option value="Allowed">{t("common.allowed")}</option>
+                    <option value="Prompt">{t("common.prompt")}</option>
+                    <option value="Blocked">{t("common.blocked")}</option>
                   </Select>
                 </div>
                 <Button type="submit" variant="primary">
-                  Add Policy
+                  {t("permissions.addPolicy")}
                 </Button>
               </form>
 
               <table className="permission-rules-table">
                 <thead>
                   <tr>
-                    <th>Command Pattern</th>
-                    <th>Behavior Status</th>
-                    <th style={{ width: "80px", textAlign: "right" }}>Actions</th>
+                    <th>{t("permissions.commandPattern")}</th>
+                    <th>{t("permissions.behaviorStatus")}</th>
+                    <th style={{ width: "80px", textAlign: "right" }}>{t("permissions.actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -276,7 +276,7 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
                         colSpan={3}
                         style={{ textAlign: "center", color: "var(--text-muted)", padding: "20px" }}
                       >
-                        No specific rules defined. The default behavior is to Prompt for all commands.
+                        {t("permissions.noRulesDefined")}
                       </td>
                     </tr>
                   ) : (
@@ -294,7 +294,7 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
                             variant="danger"
                             size="sm"
                           >
-                            Delete
+                            {t("common.delete")}
                           </Button>
                         </td>
                       </tr>
@@ -309,11 +309,10 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
           <Card glow="purple" className="settings-section-card" style={{ marginBottom: "24px" }}>
             <CardBody>
               <h2 className="section-card-title">
-                <span style={{ color: "var(--accent-purple)", marginRight: "8px" }}>🔑</span> Credentials & Secrets Keys
+                <span style={{ color: "var(--accent-purple)", marginRight: "8px" }}>🔑</span> {t("permissions.credentialsSecretsKeys")}
               </h2>
               <p className="section-card-desc">
-                Manage repository secrets (e.g., API keys, deploy tokens). These secrets are masked in
-                workflow logs and exposed only to approved CLI commands.
+                {t("permissions.secretsDescription")}
               </p>
 
               <form onSubmit={handleAddSecret} className="inline-form" style={{ display: "flex", gap: "12px", alignItems: "flex-end", marginBottom: "20px" }}>
@@ -322,7 +321,7 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
                     type="text"
                     value={newSecretKey}
                     onChange={(e) => setNewSecretKey(e.target.value)}
-                    placeholder="Secret key (e.g. ANTHROPIC_API_KEY)"
+                    placeholder={t("permissions.secretKeyPlaceholder")}
                     required
                   />
                 </div>
@@ -331,12 +330,12 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
                     type="password"
                     value={newSecretVal}
                     onChange={(e) => setNewSecretVal(e.target.value)}
-                    placeholder="Value"
+                    placeholder={t("permissions.secretValuePlaceholder")}
                     required
                   />
                 </div>
                 <Button type="submit" variant="primary">
-                  Add Secret
+                  {t("permissions.addSecret")}
                 </Button>
               </form>
 
@@ -351,7 +350,7 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
                       borderRadius: "6px",
                     }}
                   >
-                    No secrets registered for this repository.
+                    {t("permissions.noSecretsRegistered")}
                   </div>
                 ) : (
                   secrets.map((secret) => (
@@ -367,7 +366,7 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
                         variant="danger"
                         size="sm"
                       >
-                        Remove
+                        {t("common.remove")}
                       </Button>
                     </div>
                   ))
@@ -380,10 +379,10 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
           <Card glow="emerald" className="settings-section-card" style={{ marginBottom: "24px" }}>
             <CardBody>
               <h2 className="section-card-title">
-                <span style={{ color: "var(--accent-emerald)", marginRight: "8px" }}>⚙️</span> Activity & Logging Settings
+                <span style={{ color: "var(--accent-emerald)", marginRight: "8px" }}>⚙️</span> {t("permissions.activityLoggingSettings")}
               </h2>
               <p className="section-card-desc">
-                Configure which data updates and workflow processes are recorded in the security audit trail.
+                {t("permissions.auditTrailDescription")}
               </p>
 
               <div className="logging-settings-grid" style={{
@@ -395,36 +394,36 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
                 <Toggle
                   checked={loggingSettings.permissions}
                   onChange={() => handleToggleLogging("permissions")}
-                  label="Permissions Logging"
-                  description="Policies, allowed/blocked rules"
+                  label={t("permissions.permissionsLogging")}
+                  description={t("permissions.permissionsLoggingDesc")}
                 />
 
                 <Toggle
                   checked={loggingSettings.secrets}
                   onChange={() => handleToggleLogging("secrets")}
-                  label="Secrets Logging"
-                  description="Credential additions & removals"
+                  label={t("permissions.secretsLogging")}
+                  description={t("permissions.secretsLoggingDesc")}
                 />
 
                 <Toggle
                   checked={loggingSettings.workflows}
                   onChange={() => handleToggleLogging("workflows")}
-                  label="Workflows Logging"
-                  description="Runs starting and completions"
+                  label={t("permissions.workflowsLogging")}
+                  description={t("permissions.workflowsLoggingDesc")}
                 />
 
                 <Toggle
                   checked={loggingSettings.actions}
                   onChange={() => handleToggleLogging("actions")}
-                  label="Actions Logging"
-                  description="Subprocess execution checks"
+                  label={t("permissions.actionsLogging")}
+                  description={t("permissions.actionsLoggingDesc")}
                 />
 
                 <Toggle
                   checked={loggingSettings.projects}
                   onChange={() => handleToggleLogging("projects")}
-                  label="Projects Logging"
-                  description="Repo registrations & setups"
+                  label={t("permissions.projectsLogging")}
+                  description={t("permissions.projectsLoggingDesc")}
                 />
               </div>
             </CardBody>
@@ -436,10 +435,10 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
                 <div>
                   <h2 className="section-card-title" style={{ margin: 0 }}>
-                    <span style={{ color: "var(--accent-orange)", marginRight: "8px" }}>📋</span> Security Audit Trail
+                    <span style={{ color: "var(--accent-orange)", marginRight: "8px" }}>📋</span> {t("permissions.securityAuditTrail")}
                   </h2>
                   <p className="section-card-desc" style={{ margin: "4px 0 0 0" }}>
-                    Audit log of all execution permission requests, automated validations, and user-authorized commands.
+                    {t("permissions.auditLogDescription")}
                   </p>
                 </div>
                 
@@ -450,12 +449,12 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
                     onChange={(e) => setFilterCategory(e.target.value)}
                     style={{ minWidth: "160px" }}
                   >
-                    <option value="all">All Categories</option>
-                    <option value="permissions">Permissions</option>
-                    <option value="secrets">Secrets</option>
-                    <option value="workflows">Workflows</option>
-                    <option value="command">Actions (Commands)</option>
-                    <option value="projects">Projects & Repos</option>
+                    <option value="all">{t("permissions.allCategories")}</option>
+                    <option value="permissions">{t("permissions.permissionsCategory")}</option>
+                    <option value="secrets">{t("permissions.secretsCategory")}</option>
+                    <option value="workflows">{t("permissions.workflowsCategory")}</option>
+                    <option value="command">{t("permissions.actionsCategory")}</option>
+                    <option value="projects">{t("permissions.projectsCategory")}</option>
                   </Select>
 
                   <Select
@@ -463,9 +462,9 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
                     onChange={(e) => setFilterOutcome(e.target.value)}
                     style={{ minWidth: "150px" }}
                   >
-                    <option value="all">All Outcomes</option>
-                    <option value="allowed">Allowed / Approved</option>
-                    <option value="blocked">Blocked / Denied</option>
+                    <option value="all">{t("permissions.allOutcomes")}</option>
+                    <option value="allowed">{t("permissions.allowedApproved")}</option>
+                    <option value="blocked">{t("permissions.blockedDenied")}</option>
                   </Select>
                 </div>
               </div>
@@ -473,10 +472,10 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
               <table className="permission-rules-table" style={{ marginTop: "16px" }}>
                 <thead>
                   <tr>
-                    <th>Timestamp</th>
-                    <th>Action Type</th>
-                    <th>Execution Detail</th>
-                    <th>Authorized Outcome</th>
+                    <th>{t("common.timestamp")}</th>
+                    <th>{t("permissions.actionType")}</th>
+                    <th>{t("permissions.executionDetail")}</th>
+                    <th>{t("permissions.authorizedOutcome")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -501,7 +500,7 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
                             colSpan={4}
                             style={{ textAlign: "center", color: "var(--text-muted)", padding: "20px" }}
                           >
-                            No matching audit logs found.
+                            {t("permissions.noLogsFound")}
                           </td>
                         </tr>
                       );
