@@ -5,7 +5,7 @@ import { Badge } from "./ui/Badge";
 
 const getSafe = <T,>(obj: Record<string, T> | undefined | null, key: string): T | undefined => {
   if (!obj || key === "__proto__" || key === "constructor" || key === "prototype") return undefined;
-  return Object.prototype.hasOwnProperty.call(obj, key) ? obj[key] : undefined;
+  return Object.prototype.hasOwnProperty.call(obj, key) ? Reflect.get(obj, key) : undefined;
 };
 
 interface WorkflowCanvasProps {
@@ -43,10 +43,10 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
       const job = getSafe(jobs, jobId);
       if (!job) return;
       if (!job.needs || job.needs.length === 0) {
-        levels[jobId] = 1; // Level 1 is first action col
+        Reflect.set(levels, jobId, 1); // Level 1 is first action col
       } else {
         // Simple heuristic: level is max level of dependencies + 1
-        levels[jobId] = Math.max(...job.needs.map((n) => getSafe(levels, n) || 0)) + 1;
+        Reflect.set(levels, jobId, Math.max(...job.needs.map((n) => getSafe(levels, n) || 0)) + 1);
       }
     });
 
@@ -63,26 +63,26 @@ export const WorkflowCanvas: React.FC<WorkflowCanvasProps> = ({
 
   // Initialize level counts
   for (let i = 0; i <= maxLevel + 1; i++) {
-    levelCounts[i] = 0;
+    Reflect.set(levelCounts, i.toString(), 0);
   }
 
   // Position trigger node at level 0
   const triggerNodeId = "trigger";
-  positions[triggerNodeId] = { x: startX, y: startY + 50 };
-  levelCounts[0] = 1;
+  Reflect.set(positions, triggerNodeId, { x: startX, y: startY + 50 });
+  Reflect.set(levelCounts, "0", 1);
 
   // Position all job nodes
   const orderedJobIds = Object.keys(jobs).sort((a, b) => (getSafe(levels, a) || 0) - (getSafe(levels, b) || 0));
 
   orderedJobIds.forEach((jobId) => {
     const lvl = getSafe(levels, jobId) || 1;
-    const indexInLvl = levelCounts[lvl] || 0;
-    levelCounts[lvl] = indexInLvl + 1;
+    const indexInLvl = getSafe(levelCounts, lvl.toString()) || 0;
+    Reflect.set(levelCounts, lvl.toString(), indexInLvl + 1);
 
-    positions[jobId] = {
+    Reflect.set(positions, jobId, {
       x: startX + lvl * colWidth,
       y: startY + indexInLvl * 110,
-    };
+    });
   });
 
   const getStepRunStatus = (jobId: string): RunStatus => {

@@ -100,10 +100,18 @@ export const PermissionSettings: React.FC<PermissionSettingsProps> = ({
     if (!allowedKeys.includes(key)) {
       return;
     }
-    const updatedSettings = {
-      ...loggingSettings,
-      [key]: !loggingSettings[key],
-    };
+    const updatedSettings = { ...loggingSettings };
+    if (key === "permissions") {
+      updatedSettings.permissions = !loggingSettings.permissions;
+    } else if (key === "secrets") {
+      updatedSettings.secrets = !loggingSettings.secrets;
+    } else if (key === "workflows") {
+      updatedSettings.workflows = !loggingSettings.workflows;
+    } else if (key === "actions") {
+      updatedSettings.actions = !loggingSettings.actions;
+    } else if (key === "projects") {
+      updatedSettings.projects = !loggingSettings.projects;
+    }
     setLoggingSettings(updatedSettings);
 
     try {
