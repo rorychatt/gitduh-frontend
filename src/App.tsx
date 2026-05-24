@@ -14,7 +14,8 @@ import type { Project, Repository, Workflow, StepRun, AuditLogEntry } from "./ty
 
 const getSafe = <T,>(obj: Record<string, T> | undefined | null, key: string): T | undefined => {
   if (!obj || key === "__proto__" || key === "constructor" || key === "prototype") return undefined;
-  return Object.prototype.hasOwnProperty.call(obj, key) ? Reflect.get(obj, key) : undefined;
+  const entry = Object.entries(obj).find(([k]) => k === key);
+  return entry ? entry[1] : undefined;
 };
 
 function App() {
